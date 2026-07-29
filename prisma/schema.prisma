@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  generations ContentGeneration[]
+  savedPosts  SavedPost[]
+}
+
+model ContentGeneration {
+  id               String   @id @default(cuid())
+  userId           String
+  businessName     String
+  platform         String
+  emotion          String
+  audienceAge      String
+  prompt           String
+  generatedContent String
+  hashtags         String
+  style            String?
+  createdAt        DateTime @default(now())
+
+  user       User        @relation(fields: [userId], references: [id])
+  savedPosts SavedPost[]
+}
+
+model SavedPost {
+  id                  String   @id @default(cuid())
+  userId              String
+  contentGenerationId String
+  title               String
+  isFavorite          Boolean  @default(false)
+  createdAt           DateTime @default(now())
+
+  user              User              @relation(fields: [userId], references: [id])
+  contentGeneration ContentGeneration @relation(fields: [contentGenerationId], references: [id])
+}
