@@ -1,139 +1,225 @@
+/* ============================================================
+   globals.css
+   Global styles for the entire app.
+   Organised into three sections:
+     1. @theme  — design tokens (colours, fonts) as CSS variables
+     2. @layer base — bare HTML element defaults
+     3. @layer components — reusable utility classes used across pages
+   ============================================================ */
+
+/* Pull in Tailwind's base reset, utility classes, and layer system.
+   This single import replaces the old three-line @tailwind directive. */
 @import "tailwindcss";
 
+/* ── 1. Design Tokens ─────────────────────────────────────────
+   @theme inline exposes these values to Tailwind so they can be
+   used as utility classes (e.g. `bg-bg`, `text-text-secondary`)
+   AND as CSS variables (e.g. `var(--color-bg)`) in plain CSS.
+   ─────────────────────────────────────────────────────────── */
 @theme inline {
+  /* Page background — very light grey, softer than pure white */
   --color-bg: #fafafa;
+
+  /* Card / input background — pure white, sits on top of --color-bg */
   --color-surface: #ffffff;
+
+  /* Default border colour for cards and inputs */
   --color-border: #e4e4e7;
+
+  /* Border colour used on hover states */
   --color-border-hover: #d4d4d8;
+
+  /* Primary text — near-black for maximum legibility */
   --color-text: #18181b;
+
+  /* Secondary text — medium grey for labels, hints, metadata */
   --color-text-secondary: #71717a;
+
+  /* Muted text — light grey for placeholder-level copy */
   --color-text-muted: #a1a1aa;
+
+  /* Primary button / high-emphasis surface — same near-black as text */
   --color-primary: #18181b;
+
+  /* Slightly lighter shade used for primary button hover state */
   --color-primary-hover: #27272a;
+
+  /* Accent / link colour — blue, used for interactive text and focus rings */
   --color-accent: #2563eb;
+
+  /* Darker blue used when an accent element is hovered */
   --color-accent-hover: #1d4ed8;
+
+  /* Error text and border colour — red */
   --color-error: #dc2626;
+
+  /* Light red background used behind error banners */
   --color-error-bg: #fef2f2;
+
+  /* Success / confirmation colour — green */
   --color-success: #16a34a;
-  --font-display: var(--font-display);
-  --font-body: var(--font-body);
-  --font-mono: var(--font-mono);
+
+  /* Display font (headings) — system font stack, zero download time.
+     ui-sans-serif resolves to SF Pro on macOS, Segoe UI on Windows,
+     and the default sans-serif on other platforms. */
+  --font-display: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Body font (paragraphs, inputs, buttons) — same system stack as display */
+  --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Monospace font (hashtags, code snippets).
+     ui-monospace = SF Mono on Mac, Cascadia Mono on Windows, etc. */
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", "Liberation Mono", Menlo, monospace;
 }
 
+/* ── 2. Base Layer ────────────────────────────────────────────
+   Styles applied directly to HTML elements with no class needed.
+   Think of this as the app-wide default stylesheet.
+   ─────────────────────────────────────────────────────────── */
 @layer base {
   body {
-    background: var(--color-bg);
-    color: var(--color-text);
-    font-family: var(--font-body);
+    background: var(--color-bg);       /* off-white page background */
+    color: var(--color-text);          /* near-black default text */
+    font-family: var(--font-body);     /* system font — no network request */
   }
 }
 
+/* ── 3. Component Layer ───────────────────────────────────────
+   Reusable class names used throughout the app.
+   Defined here (rather than inline) so every form, button, and
+   card looks consistent without repeating long class strings.
+   ─────────────────────────────────────────────────────────── */
 @layer components {
+
+  /* .form-label ── small, medium-weight label above an input */
   .form-label {
     font-family: var(--font-body);
-    font-size: 0.875rem;
+    font-size: 0.875rem;   /* 14 px */
     font-weight: 500;
     color: var(--color-text);
   }
 
+  /* .form-input ── styled text / email / password input field */
   .form-input {
     font-family: var(--font-body);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    padding: 0.625rem 0.75rem;
+    background: var(--color-surface);             /* white fill */
+    border: 1px solid var(--color-border);        /* subtle grey border */
+    border-radius: 0.5rem;                        /* 8 px rounded corners */
+    padding: 0.625rem 0.75rem;                    /* 10 px top/bottom, 12 px sides */
     color: var(--color-text);
-    font-size: 0.875rem;
-    transition: border-color 0.15s ease;
+    font-size: 0.875rem;                          /* 14 px */
+    transition: border-color 0.15s ease;          /* smooth border colour change */
   }
 
+  /* Slightly darker border when the user hovers over an input */
   .form-input:hover {
     border-color: var(--color-border-hover);
   }
 
+  /* Blue outline ring when the input is keyboard-focused.
+     outline-offset: 1px keeps the ring just outside the border. */
   .form-input:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 1px;
   }
 
+  /* Special overrides for <select> elements that use .form-input.
+     `appearance: none` removes the browser's default dropdown arrow
+     so we can inject our own custom chevron via background-image. */
   select.form-input {
     appearance: none;
+    /* Inline SVG chevron — avoids an extra image file */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2371717a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    padding-right: 2rem;
+    background-position: right 0.75rem center; /* pin chevron to the right edge */
+    padding-right: 2rem;                       /* make room for the chevron */
   }
 
+  /* .btn-primary ── filled dark button (main call-to-action) */
   .btn-primary {
     font-family: var(--font-body);
     font-size: 0.875rem;
     font-weight: 500;
-    background: var(--color-primary);
-    color: var(--color-surface);
-    padding: 0.625rem 1.25rem;
+    background: var(--color-primary);      /* near-black fill */
+    color: var(--color-surface);           /* white text */
+    padding: 0.625rem 1.25rem;             /* 10 px top/bottom, 20 px sides */
     border-radius: 0.5rem;
     border: 1px solid var(--color-primary);
     transition: background 0.15s ease;
     cursor: pointer;
   }
 
+  /* Lighten the background slightly when the button is hovered */
   .btn-primary:hover:not(:disabled) {
     background: var(--color-primary-hover);
   }
 
+  /* Subtle press-down effect on click */
   .btn-primary:active:not(:disabled) {
     transform: scale(0.98);
   }
 
+  /* Dim and block interaction when the button is disabled
+     (e.g. while a form submission is in flight) */
   .btn-primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 
+  /* .btn-secondary ── outlined ghost button (secondary actions) */
   .btn-secondary {
     font-family: var(--font-body);
     font-size: 0.875rem;
     font-weight: 500;
-    background: var(--color-surface);
+    background: var(--color-surface);     /* white fill */
     color: var(--color-text);
     padding: 0.625rem 1.25rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-border); /* grey border instead of filled background */
     transition: background 0.15s ease, border-color 0.15s ease;
     cursor: pointer;
   }
 
+  /* Slightly grey background + darker border on hover */
   .btn-secondary:hover:not(:disabled) {
     background: var(--color-bg);
     border-color: var(--color-border-hover);
   }
 
+  /* Same press-down micro-animation as .btn-primary */
   .btn-secondary:active:not(:disabled) {
     transform: scale(0.98);
   }
 
+  /* Dim and block interaction when the button is disabled */
   .btn-secondary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 
+  /* .card ── white rounded container used for forms and content panels */
   .card {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
+    border-radius: 0.75rem; /* 12 px — slightly larger radius than inputs */
   }
 
+  /* .card-selected ── highlight variant applied when a card is chosen
+     (e.g. a platform option in the generator form).
+     Adds a blue border + matching box-shadow to create a "double border" glow. */
   .card-selected {
     border-color: var(--color-accent);
     box-shadow: 0 0 0 1px var(--color-accent);
   }
 
+  /* .hashtag ── pill badge used to display AI-generated hashtags.
+     Monospace font keeps hash symbols and text consistently spaced. */
   .hashtag {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.75rem;       /* 12 px */
     background: var(--color-bg);
     border: 1px solid var(--color-border);
-    border-radius: 9999px;
+    border-radius: 9999px;    /* fully rounded pill shape */
     padding: 0.15rem 0.6rem;
     color: var(--color-text-secondary);
   }
